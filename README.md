@@ -6,6 +6,15 @@
 ### Технологии
 Python 3.13
 fastapi 0.119
+SQLAlchemy 2.0.45
+alembic 1.17.2
+pydantic 2.12.0
+dotenv 0.9.9
+
+### Запуск проекта
+ 1) Установить и активировать виртуальное окружение ```source venv/Scripts/activate```
+ 2) Установить зависимости из файла requirements.txt ```pip install -r requirements.txt```
+ 3) Запустить проект ```uvicorn main:app --reload```
 
 ### Автор
 Баскаков О.В.
