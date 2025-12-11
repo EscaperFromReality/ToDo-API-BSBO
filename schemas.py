@@ -16,7 +16,8 @@ class TaskBase(BaseModel):
         description="Описание задачи",
     )
     is_important: bool = Field(..., description="Важность задачи")
-    is_urgent: bool = Field(..., description="Срочность задачи")
+    # is_urgent: bool = Field(..., description="Срочность задачи")
+    deadline_at: datetime = Field(..., description="Плановый дедлайн")
 
 
 class TaskCreate(TaskBase):
@@ -31,7 +32,8 @@ class TaskUpdate(BaseModel):
         None, max_length=500, description="Новое описание"
     )
     is_important: Optional[bool] = Field(None, description="Новая важность")
-    is_urgent: Optional[bool] = Field(None, description="Новая срочность")
+    # is_urgent: Optional[bool] = Field(None, description="Новая срочность")
+    deadline_at: Optional[datetime] = Field(None, description="Новый плановый дедлайн")
     completed: Optional[bool] = Field(None, description="Статус выполнения")
 
 
@@ -44,6 +46,8 @@ class TaskResponse(TaskBase):
     )
     completed: bool = Field(default=False, description="Статус выполнения задачи")
     created_at: datetime = Field(..., description="Дата и время создания задачи")
+    completed_at: Optional[datetime] = Field(None, description="Дата завершения задачи")
+    days_left: int = Field(..., description="Количество дней до дедлайна")
 
     class Config:
         from_attributes = True

@@ -12,7 +12,8 @@ class Task(Base):
 
     is_important = Column(Boolean, nullable=False, default=False)
 
-    is_urgent = Column(Boolean, nullable=False, default=False)
+    #is_urgent = Column(Boolean, nullable=False, default=False)
+    deadline_at = Column(DateTime(timezone=True), nullable=False)
 
     quadrant = Column(String(2), nullable=False)
 
