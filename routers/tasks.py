@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from typing import List, Dict, Any
-from datetime import datetime
+from datetime import datetime, timedelta
 from fastapi import Response, status
 from sqlalchemy import select
 from schemas import TaskBase, TaskCreate, TaskUpdate, TaskResponse
@@ -59,6 +59,25 @@ async def search_tasks(
         )
     for t in tasks:
         t.days_left = (t.deadline_at.date() - datetime.now().date()).days
+    return tasks
+
+
+@router.get("/tasks/today", response_model=List[TaskResponse])
+async def get_today_tasks(db: AsyncSession = Depends(get_async_session)):
+    now = datetime.now()
+    daytime = now + timedelta(hours=24)
+    result = await db.execute(
+        select(Task).where(
+            Task.deadline_at != None,
+            Task.deadline_at <= daytime,
+            Task.completed == False,
+        )
+    )
+    tasks = result.scalars().all()
+
+    for task in tasks:
+        task.days_left = (task.deadline_at.date() - now.date()).days
+
     return tasks
 
 
@@ -157,6 +176,11 @@ async def update_task(
         setattr(task, field, value)  # task.field = value
     if "is_important" in update_data or "deadline_at" in update_data:
         task.quadrant = calculate_quadrant(task.is_important, task.deadline_at)
+    if "completed" in update_data:
+        if update_data["completed"] is True and task.completed_at is None:
+            task.completed_at = datetime.now()
+        elif update_data["completed"] is False:
+            task.completed_at = None
     # ШАГ 4: Пересчитываем квадрант, если изменились важность или срочность
     # if "is_important" in update_data or "is_urgent" in update_data:
     #     if task.is_important and task.is_urgent:
