@@ -1,5 +1,6 @@
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, Text
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, Text, ForeignKey
 from sqlalchemy.sql import func
+from sqlalchemy.orm import relationship
 from database import Base
 
 
@@ -10,9 +11,15 @@ class Task(Base):
 
     description = Column(Text, nullable=True)
 
+    user_id = Column(
+        Integer, ForeignKey("users.id", ondelete="CACADE"), nullable=False, index=True
+    )
+
+    owner = relationship("User", back_populates="tasks")
+
     is_important = Column(Boolean, nullable=False, default=False)
 
-    #is_urgent = Column(Boolean, nullable=False, default=False)
+    # is_urgent = Column(Boolean, nullable=False, default=False)
     deadline_at = Column(DateTime(timezone=True), nullable=False)
 
     quadrant = Column(String(2), nullable=False)
@@ -39,4 +46,5 @@ class Task(Base):
             "completed": self.completed,
             "created_at": self.created_at,
             "completed_at": self.completed_at,
+            "user_id": self.user_id,
         }
